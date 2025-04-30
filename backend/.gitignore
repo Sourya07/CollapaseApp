@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+dist/
+.env
+*.log
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+*.log
+
+# Build
+build/
