@@ -1,7 +1,8 @@
 import { Router, Request, Response, response } from 'express';
 import jwt from 'jsonwebtoken';
+
 const router = Router();
-import { User, Data } from '../../db';
+import { Data } from '../../db';
 import { userMiddleware, AuthenticatedRequest } from '../../middleware/User'
 
 import dotenv from 'dotenv';
@@ -50,4 +51,37 @@ router.put("/courses", userMiddleware, async (req: AuthenticatedRequest, res: Re
         res.status(500).json({ error: "Failed to create course" });
     }
 });
+
+
+router.get("/courses/mine", userMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const adminCourses = await Data.find({
+            user: req.userId
+        });
+
+        res.status(200).json({ adminCourses });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch user's courses" });
+    }
+});
+
+router.get("/courses/:id", async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const courseId = req.params.id;
+
+    try {
+        const course = await Data.findById(courseId).populate('user');
+
+        if (!course) {
+            res.status(404).json({ error: "Course not found" });
+            return;
+        }
+
+        res.status(200).json(course);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch course" });
+    }
+});
+
+
+
 export default router;
